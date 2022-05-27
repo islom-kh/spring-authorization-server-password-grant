@@ -1,0 +1,30 @@
+server:
+  port: 9090
+app:
+  oauth2:
+    local-server: true
+    client-id: morphzing-mobile
+    client-secret: super-mupper-secret
+    issuer-uri: http://127.0.0.1:${server.port}
+    jwks-uri: ${app.issuer-uri}/oauth2/jwks
+    access-token-expired: 43200
+    refresh-token-expired: 86400
+    redirect-uri: http://127.0.0.1:8086/login/oauth2/code/custom
+spring:
+  datasource:
+    password: password
+    url: jdbc:postgresql://localhost:5432/database
+    username: user
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
+  main:
+    allow-bean-definition-overriding: true
+

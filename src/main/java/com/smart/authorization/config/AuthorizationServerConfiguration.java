@@ -10,7 +10,6 @@ import com.smart.authorization.config.authentication.OAuth2ResourceOwnerPassword
 import com.smart.authorization.config.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import com.smart.authorization.domain.value.Role;
 import com.smart.authorization.dto.LoggedUser;
-import com.smart.authorization.service.LoggedUserDetailsService;
 import com.smart.authorization.utils.Jwks;
 import com.smart.authorization.utils.LongMixin;
 import com.smart.authorization.utils.UserAuthorityMixin;
@@ -31,7 +30,6 @@ import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -61,7 +59,6 @@ public class AuthorizationServerConfiguration {
     private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
     private static final String UNIQUE_CLIENT_ID = "ec3898c5-7d13-40ec-8f67-24d3d34b891a";
     private final AppProperties appProperties;
-    private final LoggedUserDetailsService userDetailsService;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -186,10 +183,9 @@ public class AuthorizationServerConfiguration {
 
     private void addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(HttpSecurity http) {
         AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
-        ProviderSettings providerSettings = http.getSharedObject(ProviderSettings.class);
         OAuth2AuthorizationService authorizationService = http.getSharedObject(OAuth2AuthorizationService.class);
-        JwtEncoder jwtEncoder = http.getSharedObject(JwtEncoder.class);
         OAuth2TokenGenerator tokenGenerator = http.getSharedObject(OAuth2TokenGenerator.class);
+
         OAuth2ResourceOwnerPasswordAuthenticationProvider resourceOwnerPasswordAuthenticationProvider =
                 new OAuth2ResourceOwnerPasswordAuthenticationProvider(authenticationManager, authorizationService, tokenGenerator);
 

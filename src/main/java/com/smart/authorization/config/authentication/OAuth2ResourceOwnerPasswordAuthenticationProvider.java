@@ -68,15 +68,15 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
         Set<String> authorizedScopes = registeredClient.getScopes();        // Default to configured scopes
         Set<String> requestedScopes = resourceOwnerPasswordAuthentication.getScopes();
 
-        if (!CollectionUtils.isEmpty(resourceOwnerPasswordAuthentication.getScopes())) {
-            Set<String> unauthorizedScopes = resourceOwnerPasswordAuthentication.getScopes().stream()
+        if (!CollectionUtils.isEmpty(requestedScopes)) {
+            Set<String> unauthorizedScopes = requestedScopes.stream()
                     .filter(requestedScope -> !registeredClient.getScopes().contains(requestedScope))
                     .collect(Collectors.toSet());
             if (!CollectionUtils.isEmpty(unauthorizedScopes)) {
                 throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_SCOPE);
             }
 
-            authorizedScopes = new LinkedHashSet<>(resourceOwnerPasswordAuthentication.getScopes());
+            authorizedScopes = new LinkedHashSet<>(requestedScopes);
         }
 
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()

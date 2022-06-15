@@ -96,6 +96,12 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
             throw new OAuth2AuthenticationException(error);
         }
 
+        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
+                .principalName(usernamePasswordAuthentication.getName())
+                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
+                .attribute(OAuth2Authorization.AUTHORIZED_SCOPE_ATTRIBUTE_NAME, authorizedScopes)
+                .attribute(Principal.class.getName(), usernamePasswordAuthentication);
+
         // ----- Access Token -----
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                 generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
@@ -115,14 +121,9 @@ public class OAuth2ResourceOwnerPasswordAuthenticationProvider implements Authen
                 throw new OAuth2AuthenticationException(error);
             }
             refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
-
+            authorizationBuilder.refreshToken(refreshToken);
         }
 
-        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
-                .principalName(usernamePasswordAuthentication.getName())
-                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-                .attribute(OAuth2Authorization.AUTHORIZED_SCOPE_ATTRIBUTE_NAME, authorizedScopes)
-                .attribute(Principal.class.getName(), usernamePasswordAuthentication);
 
         if (generatedAccessToken instanceof ClaimAccessor) {
             authorizationBuilder.token(accessToken, (metadata) ->
